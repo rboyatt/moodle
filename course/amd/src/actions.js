@@ -521,8 +521,9 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/str'
              *
              * @method init
              * @param {String} courseformat name of the current course format (for fetching strings)
+             * @param {Integer} maxsections maximum number of sections the user is allowed to add
              */
-            initCoursePage: function(courseformat) {
+            initCoursePage: function(courseformat, maxsections) {
 
                 // Add a handler for course module actions.
                 $('body').on('click keypress', SELECTOR.ACTIVITYLI + ' ' +
@@ -590,7 +591,8 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/str'
                     var trigger = $(SELECTOR.ADDSECTIONS),
                         modalTitle = trigger.attr('data-add-sections');
                     var modalBody = $('<div><label for="add_section_numsections"></label> ' +
-                        '<input id="add_section_numsections" type="number" min="1" value="1"></div>');
+                        '<input id="add_section_numsections" type="number" min="1" max="' +
+                        parseInt(maxsections) + '" value="1"></div>');
                     modalBody.find('label').html(strNumberSections);
                     ModalFactory.create({
                         title: modalTitle,

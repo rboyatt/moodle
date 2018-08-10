@@ -72,7 +72,13 @@ if (isset($courseformatoptions['numsections']) && $increase !== null) {
         require_capability('moodle/course:movesections', context_course::instance($course->id));
     }
     $sections = [];
-    for ($i = 0; $i < max($numsections, 1); $i ++) {
+
+    // Calculate how many sections we should add, taking section limits into account
+    // The UI should prevent but let's try to catch anyway...
+    $nosectionsallowedtoadd = course_number_sections_can_add($courseid);
+    $sectionstoadd = min($numsections, $nosectionsallowedtoadd);
+
+    for ($i = 0; $i < max($sectionstoadd, 1); $i ++) {
         $sections[] = course_create_section($course, $insertsection);
     }
     if (!$returnurl) {

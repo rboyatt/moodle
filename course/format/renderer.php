@@ -990,21 +990,25 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
             // Note to course format developers: inserting sections in the other positions should check both
             // capabilities 'moodle/course:update' and 'moodle/course:movesections'.
 
-            echo html_writer::start_tag('div', array('id' => 'changenumsections', 'class' => 'mdl-right'));
-            if (get_string_manager()->string_exists('addsections', 'format_'.$course->format)) {
-                $straddsections = get_string('addsections', 'format_'.$course->format);
-            } else {
-                $straddsections = get_string('addsections');
+            $maxsectionstoadd = course_number_sections_can_add($course->id);
+
+            if ($maxsectionstoadd > 0) {
+                echo html_writer::start_tag('div', array('id' => 'changenumsections', 'class' => 'mdl-right'));
+                if (get_string_manager()->string_exists('addsections', 'format_'.$course->format)) {
+                    $straddsections = get_string('addsections', 'format_'.$course->format);
+                } else {
+                    $straddsections = get_string('addsections');
+                }
+                $url = new moodle_url('/course/changenumsections.php',
+                  ['courseid' => $course->id, 'insertsection' => 0, 'sesskey' => sesskey()]);
+                if ($sectionreturn !== null) {
+                    $url->param('sectionreturn', $sectionreturn);
+                }
+                $icon = $this->output->pix_icon('t/add', $straddsections);
+                echo html_writer::link($url, $icon . $straddsections,
+                  array('class' => 'add-sections', 'data-add-sections' => $straddsections));
+                echo html_writer::end_tag('div');
             }
-            $url = new moodle_url('/course/changenumsections.php',
-                ['courseid' => $course->id, 'insertsection' => 0, 'sesskey' => sesskey()]);
-            if ($sectionreturn !== null) {
-                $url->param('sectionreturn', $sectionreturn);
-            }
-            $icon = $this->output->pix_icon('t/add', $straddsections);
-            echo html_writer::link($url, $icon . $straddsections,
-                array('class' => 'add-sections', 'data-add-sections' => $straddsections));
-            echo html_writer::end_tag('div');
         }
     }
 
