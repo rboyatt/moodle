@@ -367,6 +367,28 @@ function course_integrity_check($courseid, $rawmods = null, $sections = null, $f
 }
 
 /**
+ * Count the number of sections it's possible to add to this course.
+ *
+ * @param int $courseid Course ID
+ * @return int $nosectionsallowedtoadd number of sections 'allowed' to add to this course
+ */
+function course_number_sections_can_add($courseid) {
+    global $DB;
+
+    // How many sections are in this course?
+    $noexistingsections = (int)$DB->count_records('course_sections', array('course' => $courseid));
+
+    // How many sections are we allowed?
+    $courseconfig = get_config('moodlecourse');
+    $maxsections = (int)$courseconfig->maxsections;
+
+    // Therefore how many sections are we allowed to add to this course?
+    $nosectionsallowedtoadd = $maxsections - $noexistingsections;
+
+    return $nosectionsallowedtoadd;
+}
+
+/**
  * For a given course, returns an array of course activity objects
  * Each item in the array contains he following properties:
  */
@@ -3152,6 +3174,9 @@ function include_course_ajax($course, $usedmodules = array(), $enabledmodules = 
         $config->pageparams = array();
     }
 
+    // Calculate maximum number of sections that can be added.
+    $maxsectionstoadd = course_number_sections_can_add($course->id);
+
     // Include course dragdrop
     if (course_format_uses_sections($course->format)) {
         $PAGE->requires->yui_module('moodle-course-dragdrop', 'M.course.init_section_dragdrop',
@@ -3214,7 +3239,7 @@ function include_course_ajax($course, $usedmodules = array(), $enabledmodules = 
     require_once($CFG->dirroot.'/course/dnduploadlib.php');
     dndupload_add_to_course($course, $enabledmodules);
 
-    $PAGE->requires->js_call_amd('core_course/actions', 'initCoursePage', array($course->format));
+    $PAGE->requires->js_call_amd('core_course/actions', 'initCoursePage', array($course->format, $maxsectionstoadd));
 
     return true;
 }
