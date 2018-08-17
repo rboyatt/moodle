@@ -38,7 +38,8 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/str'
             TOGGLE: '.toggle-display,.dropdown-toggle',
             SECTIONLI: 'li.section',
             SECTIONACTIONMENU: '.section_action_menu',
-            ADDSECTIONS: '#changenumsections [data-add-sections]'
+            ADDSECTIONS: '#changenumsections [data-add-sections]',
+            DELETEEMPTYSECTIONS: '#deleteemptysections [data-delete-empty-sections]'
         };
 
         Y.use('moodle-course-coursebase', function() {
@@ -622,6 +623,35 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/str'
                         });
                     });
                 });
+
+                // Add a handler for "Add sections" link to ask for a number of sections to add.
+                str.get_string('deleteemptysections').done(function(strDeleteEmptySections) {
+                    var trigger = $(SELECTOR.DELETEEMPTYSECTIONS),
+                        modalTitle = strDeleteEmptySections;
+
+                    str.get_string('deleteemptysectionsdesc').done(function(strDeleteEmptySectionsDesc) {
+                        var modalBody = $('<div>' + strDeleteEmptySectionsDesc + '</div>');
+
+                        ModalFactory.create({
+                            title: modalTitle,
+                            type: ModalFactory.types.SAVE_CANCEL,
+                            body: modalBody.html()
+                        }, trigger)
+                            .done(function(modal) {
+                                var deleteEmptySections = function() {
+                                    document.location = trigger.attr('href') + '&delete=true';
+                                };
+                                modal.setSaveButtonText(modalTitle);
+                                modal.getRoot().on(ModalEvents.save, function(e) {
+                                    e.preventDefault();
+                                    deleteEmptySections();
+                                });
+                            });
+                    });
+
+                });
+
+
             },
 
             /**
