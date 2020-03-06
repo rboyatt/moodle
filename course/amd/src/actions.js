@@ -603,30 +603,25 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/str'
                     });
                 });
 
-                // Add a handler for "Add sections" link to ask for a number of sections to add.
-                str.get_string('deleteemptysections').done(function(strDeleteEmptySections) {
+                // Add a handler for "Delete empty sections" link
+                str.get_string('deleteemptysectionsdesc').done(function(strDeleteEmptySectionsDesc) {
                     var trigger = $(SELECTOR.DELETEEMPTYSECTIONS),
-                        modalTitle = strDeleteEmptySections;
+                        modalTitle = trigger.attr('data-delete-empty-sections');
 
-                    str.get_string('deleteemptysectionsdesc').done(function(strDeleteEmptySectionsDesc) {
-                        var modalBody = $('<div>' + strDeleteEmptySectionsDesc + '</div>');
+                    var modalBody = $('<div>' + strDeleteEmptySectionsDesc + '</div>');
 
-                        ModalFactory.create({
-                            title: modalTitle,
-                            type: ModalFactory.types.SAVE_CANCEL,
-                            body: modalBody.html()
-                        }, trigger)
-                            .done(function(modal) {
-                                var deleteEmptySections = function() {
-                                    document.location = trigger.attr('href') + '&delete=true';
-                                };
-                                modal.setSaveButtonText(modalTitle);
-                                modal.getRoot().on(ModalEvents.save, function(e) {
-                                    e.preventDefault();
-                                    deleteEmptySections();
-                                });
+                    ModalFactory.create({
+                        title: modalTitle,
+                        type: ModalFactory.types.SAVE_CANCEL,
+                        body: modalBody.html()
+                    }, trigger)
+                        .done(function(modal) {
+                            modal.setSaveButtonText(modalTitle);
+                            modal.getRoot().on(ModalEvents.save, function(e) {
+                                e.preventDefault();
+                                document.location = trigger.attr('href') + '&delete=true';
                             });
-                    });
+                        });
 
                 });
 

@@ -574,39 +574,27 @@ function get_module_types_names($plural = false) {
 /**
  * Deletes all empty sections in a course.
  *
- * @param int $courseorid course object or course id
+ * @param object $course course object
  * @return bool true if successful deletion of all empty sections
  */
-function course_delete_empty_sections($courseorid) {
-    global $DB;
-    $courseid = is_object($courseorid) ? $courseorid->id : $courseid;
+function course_delete_empty_sections(object $course) {
+  global $DB;
 
-    // Get all sections for this course.
-    if (!$sections = $DB->get_records_menu('course_sections', array('course' => $courseid),
-      'id ASC', 'id, sequence')) {
-        return false;
-    }
+  if (!$sections = $DB->get_records('course_sections', array('course' => $course->id),
+    'section DESC', 'id, section')) {
+    return false;
+  }
 
-    // As course_delete_section relies on sectionnumber, we need to check this each time.
-    // Otherwise as deletions start to occur, we'll miss some numbers or attempt to delete
-    // the wrong sections.
-    foreach ($sections as $sectionid => $sequence) {
+  foreach ($sections as $section) {
+    // Delete this section if and only if empty
+    course_delete_section($course->id, $section->section, false);
+  }
 
-        // Only attempt to delete empty sections.
-        if (empty($sequence)) {
-            // For this section ID, get the current sectionnumber.
-            $currentsectionumber = $DB->get_field('course_sections', 'section', array('id' => $sectionid));
+  // Clear the cache for this course
+  rebuild_course_cache($course->id, true);
 
-            // Now delete this section.
-            $status = course_delete_section($courseid, $currentsectionumber, false);
-        }
-    }
-
-    rebuild_course_cache($courseid, true);
-
-    return true;
+  return true;
 }
-
 
 /**
  * Set highlighted section. Only one section can be highlighted at the time.
