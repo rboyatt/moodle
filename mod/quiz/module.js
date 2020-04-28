@@ -60,12 +60,12 @@ M.mod_quiz.timer = {
 
     /**
      * @param Y the YUI object
-     * @param start, the timer starting time, in seconds.
+     * @param end, timestamp in milliseconds indicating when the quiz attempt ends
      * @param preview, is this a quiz preview?
      */
-    init: function(Y, start, preview) {
+    init: function(Y, end, preview) {
         M.mod_quiz.timer.Y = Y;
-        M.mod_quiz.timer.endtime = M.pageloadstarttime.getTime() + start*1000;
+        M.mod_quiz.timer.endtime = end;
         M.mod_quiz.timer.preview = preview;
         M.mod_quiz.timer.update();
         Y.one('#quiz-timer').setStyle('display', 'block');

@@ -291,7 +291,7 @@ class mod_quiz_renderer extends plugin_renderer_base {
                 // this will just have the effect of causing the quiz to be submitted immediately.
                 $timerstartvalue = max($timerstartvalue, 1);
             }
-            $this->initialise_timer($timerstartvalue, $ispreview);
+            $this->initialise_timer($timenow + $timerstartvalue, $ispreview);
         }
 
         return html_writer::tag('div', get_string('timeleft', 'quiz') . ' ' .
@@ -570,10 +570,10 @@ class mod_quiz_renderer extends plugin_renderer_base {
 
     /**
      * Output the JavaScript required to initialise the countdown timer.
-     * @param int $timerstartvalue time remaining, in seconds.
+     * @param int $attemptends timestamp indicating when the attempt timer runs out
      */
-    public function initialise_timer($timerstartvalue, $ispreview) {
-        $options = array($timerstartvalue, (bool)$ispreview);
+    public function initialise_timer($attemptends, $ispreview) {
+        $options = array($attemptends*1000, (bool)$ispreview);
         $this->page->requires->js_init_call('M.mod_quiz.timer.init', $options, false, quiz_get_js_module());
     }
 
