@@ -130,6 +130,12 @@ M.mod_quiz.timer = {
 
         // Arrange for this method to be called again soon.
         M.mod_quiz.timer.timeoutid = setTimeout(M.mod_quiz.timer.update, 100);
+    },
+
+    // Handle timer update received via AJAX call
+    handle_ajax_timer_update: function(timeleft) {
+        M.mod_quiz.timer.endtime = new Date().getTime() + timeleft*1000;
+        M.mod_quiz.timer.update();
     }
 };
 

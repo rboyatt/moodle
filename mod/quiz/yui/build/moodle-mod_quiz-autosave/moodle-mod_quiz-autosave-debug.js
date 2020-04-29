@@ -358,12 +358,16 @@ M.mod_quiz.autosave = {
     },
 
     save_done: function(transactionid, response) {
-        if (response.responseText !== 'OK') {
+        var autosavedata = JSON.parse(response.responseText);
+        if (autosavedata.status !== 'OK') {
             // Because IIS is useless, Moodle can't send proper HTTP response
             // codes, so we have to detect failures manually.
             this.save_failed(transactionid, response);
             return;
         }
+
+        Y.log('Updating timer: ' + autosavedata.timeleft + ' seconds remain.' , 'debug', 'moodle-mod_quiz-timer');
+        M.mod_quiz.timer.handle_ajax_timer_update(autosavedata.timeleft);
 
         Y.log('Save completed.', 'debug', 'moodle-mod_quiz-autosave');
         this.save_transaction = null;
@@ -408,7 +412,7 @@ M.mod_quiz.autosave = {
         if (this.save_transaction) {
             this.save_transaction.abort();
         }
-    }
+    },
 };
 
 
