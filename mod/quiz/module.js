@@ -58,6 +58,9 @@ M.mod_quiz.timer = {
     // so we can cancel.
     timeoutid: null,
 
+    // Threshold for updating time remaining
+    threshold: 3,
+
     /**
      * @param Y the YUI object
      * @param start, the timer starting time, in seconds.
@@ -132,10 +135,16 @@ M.mod_quiz.timer = {
         M.mod_quiz.timer.timeoutid = setTimeout(M.mod_quiz.timer.update, 100);
     },
 
-    // Handle timer update received via AJAX call
-    handle_ajax_timer_update: function(timeleft) {
-        M.mod_quiz.timer.endtime = new Date().getTime() + timeleft*1000;
-        M.mod_quiz.timer.update();
+    // Allow the end time of the quiz to be updated
+    update_end_time: function(timeleft) {
+        var newtimeleft = new Date().getTime() + timeleft*1000;
+
+        // Only update if change is greater than the threshold, so the
+        // time doesn't bounce around unnecessarily
+        if( Math.abs(newtimeleft - M.mod_quiz.timer.endtime ) > M.mod_quiz.timer.threshold ) {
+            M.mod_quiz.timer.endtime = newtimeleft;
+            M.mod_quiz.timer.update();
+        }
     }
 };
 

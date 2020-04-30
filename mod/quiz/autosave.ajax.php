@@ -59,14 +59,18 @@ if ($attemptobj->is_finished()) {
             'attemptalreadyclosed', null, $attemptobj->review_url());
 }
 
-// Calculate time remaining
-$timeleft = $attemptobj->get_time_left_display($timenow);
-
 $attemptobj->process_auto_save($timenow);
 $transaction->allow_commit();
 
+// Calculate time remaining
+$timeleft = $attemptobj->get_time_left_display($timenow);
+
+// Build response, only returning timeleft is in-progress
+// and
 $r = new stdClass();
 $r->status = "OK";
-$r->timeleft = $timeleft;
+if($timeleft !== false) {
+  $r->timeleft = $timeleft;
+}
 echo json_encode($r);
 
