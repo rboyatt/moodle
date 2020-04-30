@@ -365,7 +365,7 @@ M.mod_quiz.autosave = {
         }
 
         Y.log('Updating timer: ' + autosavedata.timeleft + ' seconds remain.' , 'debug', 'moodle-mod_quiz-timer');
-        M.mod_quiz.timer.handle_ajax_timer_update(autosavedata.timeleft);
+        M.mod_quiz.timer.update_end_time(autosavedata.timeleft);
 
         Y.log('Save completed.', 'debug', 'moodle-mod_quiz-autosave');
         this.save_transaction = null;
