@@ -58,8 +58,8 @@ M.mod_quiz.timer = {
     // so we can cancel.
     timeoutid: null,
 
-    // Threshold for updating time remaining
-    threshold: 3,
+    // Threshold for updating time remaining, in milliseconds
+    threshold: 3000,
 
     /**
      * @param Y the YUI object
