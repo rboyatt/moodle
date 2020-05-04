@@ -212,8 +212,17 @@ class quiz_overview_report extends quiz_attempts_report {
 
         if (!$table->is_downloading() && $options->usercanseegrades) {
             $output = $PAGE->get_renderer('mod_quiz');
-            list($bands, $bandwidth) = self::get_bands_count_and_width($quiz);
-            $labels = self::get_bands_labels($bands, $bandwidth, $quiz);
+
+            $quizdata = $DB->get_record_sql(
+              "SELECT min(grade)
+                 FROM {quiz_grades} qg
+                 WHERE qg.quiz = :quizid", array('quizid' => $quiz->id)
+            );
+            $minscore = $quizdata->min;
+            $maxscore = $quiz->grade;
+
+            list($bands, $bandwidth) = self::get_bands_count_and_width($quiz, $minscore, $maxscore);
+            $labels = self::get_bands_labels($bands, $bandwidth, $quiz, $minscore);
 
             if ($currentgroup && $this->hasgroupstudents) {
                 $sql = "SELECT qg.id
@@ -231,6 +240,7 @@ class quiz_overview_report extends quiz_attempts_report {
 
             if ($DB->record_exists('quiz_grades', array('quiz'=> $quiz->id))) {
                 $data = quiz_report_grade_bands($bandwidth, $bands, $quiz->id, new \core\dml\sql_join());
+                $data = array_values($data);
                 $chart = self::get_chart($labels, $data);
                 $graphname = get_string('overviewreportgraph', 'quiz_overview');
                 echo $output->chart($chart, $graphname);
@@ -606,8 +616,9 @@ class quiz_overview_report extends quiz_attempts_report {
      * @param object $quiz The quiz object.
      * @return array Contains the number of bands, and their width.
      */
-    public static function get_bands_count_and_width($quiz) {
-        $bands = $quiz->grade;
+    public static function get_bands_count_and_width($quiz, $min, $max) {
+        $r = abs($max - $min);
+        $bands = $r;
         while ($bands > 20 || $bands <= 10) {
             if ($bands > 50) {
                 $bands /= 5;
@@ -622,7 +633,7 @@ class quiz_overview_report extends quiz_attempts_report {
         }
         // See MDL-34589. Using doubles as array keys causes problems in PHP 5.4, hence the explicit cast to int.
         $bands = (int) ceil($bands);
-        return [$bands, $quiz->grade / $bands];
+        return [$bands, $r / $bands];
     }
 
     /**
@@ -633,10 +644,10 @@ class quiz_overview_report extends quiz_attempts_report {
      * @param object $quiz The quiz object.
      * @return string[] The labels.
      */
-    public static function get_bands_labels($bands, $bandwidth, $quiz) {
+    public static function get_bands_labels($bands, $bandwidth, $quiz, $minscore) {
         $bandlabels = [];
-        for ($i = 1; $i <= $bands; $i++) {
-            $bandlabels[] = quiz_format_grade($quiz, ($i - 1) * $bandwidth) . ' - ' . quiz_format_grade($quiz, $i * $bandwidth);
+        for ($i = 1; $i <= $bands+1; $i++) {
+            $bandlabels[] = quiz_format_grade($quiz, $minscore + ($i - 1) * $bandwidth) . ' - ' . quiz_format_grade($quiz, $minscore + $i * $bandwidth);
         }
         return $bandlabels;
     }
