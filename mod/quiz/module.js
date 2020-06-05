@@ -58,7 +58,7 @@ M.mod_quiz.timer = {
     // so we can cancel.
     timeoutid: null,
 
-    // Threshold for updating time remaining, in milliseconds
+    // Threshold for updating time remaining, in milliseconds.
     threshold: 3000,
 
     /**
@@ -68,7 +68,7 @@ M.mod_quiz.timer = {
      */
     init: function(Y, start, preview) {
         M.mod_quiz.timer.Y = Y;
-        M.mod_quiz.timer.endtime = M.pageloadstarttime.getTime() + start*1000;
+        M.mod_quiz.timer.endtime = M.pageloadstarttime.getTime() + start * 1000;
         M.mod_quiz.timer.preview = preview;
         M.mod_quiz.timer.update();
         Y.one('#quiz-timer').setStyle('display', 'block');
@@ -97,9 +97,9 @@ M.mod_quiz.timer = {
     // Function to update the clock with the current time left, and submit the quiz if necessary.
     update: function() {
         var Y = M.mod_quiz.timer.Y;
-        var secondsleft = Math.floor((M.mod_quiz.timer.endtime - new Date().getTime())/1000);
+        var secondsleft = Math.floor((M.mod_quiz.timer.endtime - new Date().getTime()) / 1000);
 
-        // If time has expired, set the hidden form field that says time has expired and submit
+        // If time has expired, set the hidden form field that says time has expired and submit.
         if (secondsleft < 0) {
             M.mod_quiz.timer.stop(null);
             Y.one('#quiz-time-left').setContent(M.util.get_string('timesup', 'quiz'));
@@ -135,12 +135,12 @@ M.mod_quiz.timer = {
         M.mod_quiz.timer.timeoutid = setTimeout(M.mod_quiz.timer.update, 100);
     },
 
-    // Allow the end time of the quiz to be updated
+    // Allow the end time of the quiz to be updated.
     update_end_time: function(timeleft) {
-        var newtimeleft = new Date().getTime() + timeleft*1000;
+        var newtimeleft = new Date().getTime() + timeleft * 1000;
 
         // Only update if change is greater than the threshold, so the
-        // time doesn't bounce around unnecessarily
+        // time doesn't bounce around unnecessarily.
         if( Math.abs(newtimeleft - M.mod_quiz.timer.endtime ) > M.mod_quiz.timer.threshold ) {
             M.mod_quiz.timer.endtime = newtimeleft;
             M.mod_quiz.timer.update();
