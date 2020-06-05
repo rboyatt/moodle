@@ -358,7 +358,9 @@ M.mod_quiz.autosave = {
             return;
         }
 
-        M.mod_quiz.timer.handle_ajax_timer_update(autosavedata.timeleft);
+        if( typeof autosavedata.timeleft !== 'undefined') {
+            M.mod_quiz.timer.update_end_time(autosavedata.timeleft);
+        }
 
         this.save_transaction = null;
 

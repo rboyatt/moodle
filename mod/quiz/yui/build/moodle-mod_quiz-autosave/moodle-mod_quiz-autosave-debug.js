@@ -367,7 +367,7 @@ M.mod_quiz.autosave = {
         }
 
         if( typeof autosavedata.timeleft !== 'undefined') {
-            Y.log('Updating timer: ' + autosavedata.timeleft + ' seconds remain.' , 'debug', 'moodle-mod_quiz-timer');
+            Y.log('Updating timer: ' + autosavedata.timeleft + ' seconds remain.', 'debug', 'moodle-mod_quiz-timer');
             M.mod_quiz.timer.update_end_time(autosavedata.timeleft);
         }
 
