@@ -89,6 +89,7 @@ $PAGE->blocks->add_fake_block($navbc, reset($regions));
 $PAGE->navbar->add(get_string('summaryofattempt', 'quiz'));
 $PAGE->set_title($attemptobj->summary_page_title());
 $PAGE->set_heading($attemptobj->get_course()->fullname);
+$PAGE->set_cacheable(false);
 
 // Display the page.
 echo $output->summary_page($attemptobj, $displayoptions);
