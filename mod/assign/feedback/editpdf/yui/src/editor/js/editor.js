@@ -232,6 +232,15 @@ EDITOR.prototype = {
     collapsecomments: true,
 
     /**
+     * Removed annotations - for redo
+     *
+     * @property removedannotations
+     * @type ArrayAssert
+     * @protected
+     */
+    removedannotations: [],
+
+    /**
      * Called during the initialisation process of the object.
      * @method initializer
      */
@@ -637,6 +646,8 @@ EDITOR.prototype = {
                 annotation = this.pages[i].annotations[j];
                 this.pages[i].annotations[j] = this.create_annotation(annotation.type, annotation);
             }
+
+            this.removedannotations[i] = [];
         }
 
         readonly = this.get('readonly');
@@ -797,6 +808,8 @@ EDITOR.prototype = {
             expcolcommentsbutton,
             rotateleftbutton,
             rotaterightbutton,
+            undobutton,
+            redobutton,
             currentstampbutton,
             stampfiles,
             picker,
@@ -823,6 +836,15 @@ EDITOR.prototype = {
         rotaterightbutton = this.get_dialogue_element(SELECTOR.ROTATERIGHTBUTTON);
         rotaterightbutton.on('click', this.rotatePDF, this, false);
         rotaterightbutton.on('key', this.rotatePDF, 'down:13', this, false);
+
+        // Undo and redo buttons
+        undobutton = this.get_dialogue_element(SELECTOR.UNDOBUTTON);
+        undobutton.on('click', this.undoAnnotation, this);
+        undobutton.on('key', this.undoAnnotation, 'down:13', this);
+
+        redobutton = this.get_dialogue_element(SELECTOR.REDOBUTTON);
+        redobutton.on('click', this.redoAnnotation, this);
+        redobutton.on('key', this.redoAnnotation, 'down:13', this);
 
         this.disable_touch_scroll();
 
@@ -1482,6 +1504,42 @@ EDITOR.prototype = {
 
         for (i = 0; i < this.drawables.length; i++) {
             this.drawables[i].scroll_update(x, y);
+        }
+    },
+
+    /**
+     * Undo the last annotation and remove from the page.
+     * @protected
+     * @method undoAnnotation
+     */
+    undoAnnotation: function() {
+        // Remove the last annotation
+        var annotations = this.pages[this.currentpage].annotations;
+        if( annotations.length > 0) {
+            var lastannotation = annotations.pop();
+            // ...saving incase we need to redo
+            this.removedannotations[this.currentpage].push(lastannotation);
+        }
+
+        // Redraw the page
+        this.redraw();
+    },
+
+    /**
+     * Redo an annotation previously removed from the page
+     * @protected
+     * @method redoAnnotation
+     */
+    redoAnnotation: function() {
+        var annotations = this.pages[this.currentpage].annotations;
+
+        // If we have any undo history...
+        if( this.removedannotations[this.currentpage].length > 0 ) {
+            // Retrieve most recent item and add back into current annotations
+            annotations.push( this.removedannotations[this.currentpage].pop() );
+
+            // Redraw the page
+            this.redraw();
         }
     },
 

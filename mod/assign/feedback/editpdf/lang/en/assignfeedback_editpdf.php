@@ -109,3 +109,5 @@ $string['draftchangessaved'] = 'Draft annotations saved';
 $string['preparesubmissionsforannotation'] = 'Prepare submissions for annotation';
 $string['rotateleft'] = 'Rotate 90 degrees to the left';
 $string['rotateright'] = 'Rotate 90 degrees to the right';
+$string['undo'] = 'Undo the last annotation on this page';
+$string['redo'] = 'Redo the last annotation on this page';

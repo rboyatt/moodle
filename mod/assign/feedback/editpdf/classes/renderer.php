@@ -44,6 +44,8 @@ class assignfeedback_editpdf_renderer extends plugin_renderer_base {
         $shortcuts = array('navigate-previous-button' => 'j',
             'rotateleft' => 'q',
             'rotateright' => 'w',
+            'undo' => '',
+            'redo' => '',
             'navigate-page-select' => 'k',
             'navigate-next-button' => 'l',
             'searchcomments' => 'h',
@@ -170,6 +172,13 @@ class assignfeedback_editpdf_renderer extends plugin_renderer_base {
             $rotationtools = html_writer::div($rotationtools, 'toolbar', array('role' => 'toolbar'));
         }
 
+        $undotools = '';
+        if (!$widget->readonly) {
+          $undotools .= $this->render_toolbar_button('undo', 'undo', $this->get_shortcut('undo'));
+          $undotools .= $this->render_toolbar_button('redo', 'redo', $this->get_shortcut('redo'));
+          $undotools = html_writer::div($undotools, 'toolbar', array('role' => 'toolbar'));
+        }
+
         $toolbargroup = '';
         $clearfix = html_writer::div('', 'clearfix');
         if (!$widget->readonly) {
@@ -202,7 +211,7 @@ class assignfeedback_editpdf_renderer extends plugin_renderer_base {
             $toolbar4 = html_writer::div($toolbar4, 'toolbar', array('role'=>'toolbar'));
 
             // Add toolbars to toolbar_group in order of display, and float the toolbar_group right.
-            $toolbars = $rotationtools . $toolbar1 . $toolbar2 . $toolbar3 . $toolbar4;
+            $toolbars = $rotationtools . $undotools . $toolbar1 . $toolbar2 . $toolbar3 . $toolbar4;
             $toolbargroup = html_writer::div($toolbars, 'toolbar_group', array('role' => 'toolbar_group'));
         }
 

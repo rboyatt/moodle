@@ -249,6 +249,9 @@ Y.extend(ANNOTATION, Y.Base, {
         annotations = this.editor.pages[this.editor.currentpage].annotations;
         for (i = 0; i < annotations.length; i++) {
             if (annotations[i] === this) {
+                // Add this annotation to the list used for 'redo'
+                this.editor.removedannotations[this.editor.currentpage].push(annotations[i]);
+                // Remove from existing annotations
                 annotations.splice(i, 1);
                 if (this.drawable) {
                     this.drawable.erase();
