@@ -184,7 +184,7 @@
     border-left: 0;
     */
     /*rtl:ignore*/
-    float: left;
+    /*float: left;*/
 }
 
 .assignfeedback_editpdf_widget .toolbar > button.rotaterightbutton {

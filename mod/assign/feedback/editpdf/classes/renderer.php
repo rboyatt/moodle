@@ -159,19 +159,6 @@ class assignfeedback_editpdf_renderer extends plugin_renderer_base {
 
         $navigation1 = html_writer::div($navigation1, 'navigation', array('role'=>'navigation'));
 
-        $navigation2 .= $this->render_toolbar_button('comment_search', 'searchcomments', $this->get_shortcut('searchcomments'));
-        $navigation2 = html_writer::div($navigation2, 'navigation-search', array('role'=>'navigation'));
-
-        $navigation3 .= $this->render_toolbar_button('comment_expcol', 'expcolcomments', $this->get_shortcut('expcolcomments'));
-        $navigation3 = html_writer::div($navigation3, 'navigation-expcol', array('role' => 'navigation'));
-
-        $rotationtools = '';
-        if (!$widget->readonly) {
-            $rotationtools .= $this->render_toolbar_button('rotate_left', 'rotateleft', $this->get_shortcut('rotateleft'));
-            $rotationtools .= $this->render_toolbar_button('rotate_right', 'rotateright', $this->get_shortcut('rotateright'));
-            $rotationtools = html_writer::div($rotationtools, 'toolbar', array('role' => 'toolbar'));
-        }
-
         $undotools = '';
         if (!$widget->readonly) {
           $undotools .= $this->render_toolbar_button('undo', 'undo', $this->get_shortcut('undo'));
@@ -179,19 +166,30 @@ class assignfeedback_editpdf_renderer extends plugin_renderer_base {
           $undotools = html_writer::div($undotools, 'toolbar', array('role' => 'toolbar'));
         }
 
+        $searchcomments = $this->render_toolbar_button('comment_search', 'searchcomments', $this->get_shortcut('searchcomments'));
+        $searchcomments .= $this->render_toolbar_button('comment_expcol', 'expcolcomments', $this->get_shortcut('expcolcomments'));
+
+        $navigation2 = html_writer::div($searchcomments, 'navigation-search', array('role'=>'navigation'));
+
         $toolbargroup = '';
         $clearfix = html_writer::div('', 'clearfix');
         if (!$widget->readonly) {
+            // Select Tool.
+            $selecttoolbar = '';
+            $selecttoolbar .= $this->render_toolbar_button('select', 'select', $this->get_shortcut('select'));
+            $selecttoolbar = html_writer::div($selecttoolbar, 'toolbar', array('role' => 'toolbar'));
+
             // Comments.
             $toolbar1 = '';
             $toolbar1 .= $this->render_toolbar_button('comment', 'comment', $this->get_shortcut('comment'));
             $toolbar1 .= $this->render_toolbar_button('background_colour_clear', 'commentcolour', $this->get_shortcut('commentcolour'));
             $toolbar1 = html_writer::div($toolbar1, 'toolbar', array('role' => 'toolbar'));
 
-            // Select Tool.
+            // Rotation and drag tools.
             $toolbar2 = '';
             $toolbar2 .= $this->render_toolbar_button('drag', 'drag', $this->get_shortcut('drag'));
-            $toolbar2 .= $this->render_toolbar_button('select', 'select', $this->get_shortcut('select'));
+            $toolbar2 .= $this->render_toolbar_button('rotate_left', 'rotateleft', $this->get_shortcut('rotateleft'));
+            $toolbar2 .= $this->render_toolbar_button('rotate_right', 'rotateright', $this->get_shortcut('rotateright'));
             $toolbar2 = html_writer::div($toolbar2, 'toolbar', array('role' => 'toolbar'));
 
             // Other Tools.
@@ -211,13 +209,13 @@ class assignfeedback_editpdf_renderer extends plugin_renderer_base {
             $toolbar4 = html_writer::div($toolbar4, 'toolbar', array('role'=>'toolbar'));
 
             // Add toolbars to toolbar_group in order of display, and float the toolbar_group right.
-            $toolbars = $rotationtools . $undotools . $toolbar1 . $toolbar2 . $toolbar3 . $toolbar4;
+            $toolbars = $selecttoolbar . $toolbar1 . $toolbar2 . $toolbar3 . $toolbar4;
             $toolbargroup = html_writer::div($toolbars, 'toolbar_group', array('role' => 'toolbar_group'));
         }
 
         $pageheader = html_writer::div($navigation1 .
+                                       $undotools .
                                        $navigation2 .
-                                       $navigation3 .
                                        $toolbargroup .
                                        $clearfix,
                                        'pageheader');
